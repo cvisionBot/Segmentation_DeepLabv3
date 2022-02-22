@@ -7,6 +7,11 @@ import pytorch_lightning as pl
 import numpy as np
 from torch.utils.data import Dataset, DataLoader
 
+'''
+Dataset 참고 사이트
+https://bo-10000.tistory.com/38
+'''
+
 def voc_cmap(N=256, normalized=False):
     def bitget(byteval, idx):
         return ((byteval & (1 << idx)) != 0)
