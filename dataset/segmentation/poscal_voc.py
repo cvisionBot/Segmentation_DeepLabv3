@@ -72,7 +72,7 @@ if __name__ == '__main__':
     print('make data')
     loader = DataLoader(PascalVocDataset(
         transforms=train_transforms, path='/mnt/Segmentation'),
-        batch_size=1, shuffle=True, collate_fn=collater
+        batch_size=2, shuffle=True, collate_fn=collater
     )
 
     for batch, sample in enumerate(loader):

@@ -1,2 +1,2 @@
-from .backbone.resnet50 import ResNet
+from .backbone.resnet import ResNet
 __all__ = ['ResNet']

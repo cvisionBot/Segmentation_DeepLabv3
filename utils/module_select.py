@@ -1,5 +1,5 @@
 from torch import optim
-from models.backbone.resnet50 import ResNet
+from models.backbone.resnet import ResNet
 
 def get_model(model_name):
     model_dict = {'ResNet': ResNet}
