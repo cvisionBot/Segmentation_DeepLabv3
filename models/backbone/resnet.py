@@ -33,10 +33,11 @@ class _ResNet(nn.Module):
             self.layer3 = self.make_layer(block, 256, layers[2], stride=2)
             self.layer4 = self.make_layer(block, 512, layers[3], stride=2)
         
-
+        self.avg = nn.AdaptiveAvgPool2d(7)
+        self.flat = nn.Flatten(-1, 1)
         self.classifier = nn.Sequential(
             nn.AdaptiveAvgPool2d(7),
-            nn.Flatten(-2),
+            nn.Flatten(-1, 0),
             nn.Linear(512 * block.expansion, classes)
         )
     
@@ -63,9 +64,13 @@ class _ResNet(nn.Module):
         output = self.layer2(output)
         output = self.layer3(output)
         output = self.layer4(output)
-        pred = self.classifier(output)
-        print('shape : ', pred.shape)
-        return {'pred': pred}
+        pred = self.avg(output)
+        print('pooling shape : ', pred.shape)
+        pred = self.flat(pred)
+        print('flatten shape : ', pred.shape)
+        # pred = self.classifier(output)
+        # print('shape : ', pred.shape)
+        # return {'pred': pred}
 
 
 def ResNet(in_channels, classes=1000, varient=50):
