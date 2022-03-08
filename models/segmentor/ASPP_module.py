@@ -46,8 +46,10 @@ class Decoder(nn.Module): # using deeplabv3
         self.conv = Conv2dBnRelu(in_channels=out_channels * branch, out_channels=out_channels, kernel_size=1, stride=1, padding=0, dilation=1,
                         groups=1, bias=True, padding_mode='zeros')
         self.out = nn.Conv2d(in_channels=out_channels, out_channels=num_classes, kernel_size=1)
+        self.upsample = nn.Upsample(scale_factor=8, mode='bilinear')
 
     def forward(self, input):
         output = self.conv(input)
         output = self.out(output)
+        output = self.upsample(output)
         return output
