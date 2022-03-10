@@ -34,7 +34,7 @@ class ASPP(nn.Module):
         branch2 = self.branch2(input)
         branch3 = self.branch3(input)
         branch4 = self.branch4(input)
-        pre_branch5 = self.branch5_avg(input)
+        pre_branch5 = self.branch5_avg(input) # 쌩짜 넣는게 더 이득
         branch5 = self.branch5(pre_branch5)
         branch5 = self.branch5_up(branch5)
         output = torch.cat([branch1, branch2, branch3, branch4, branch5], axis=1)
@@ -46,7 +46,7 @@ class Decoder(nn.Module): # using deeplabv3
         self.conv = Conv2dBnRelu(in_channels=out_channels * branch, out_channels=out_channels, kernel_size=1, stride=1, padding=0, dilation=1,
                         groups=1, bias=True, padding_mode='zeros')
         self.out = nn.Conv2d(in_channels=out_channels, out_channels=num_classes, kernel_size=1)
-        self.upsample = nn.Upsample(scale_factor=8, mode='bilinear')
+        self.upsample = nn.Upsample(scale_factor=8, mode='bilinear') # conv - up - conv - up - conv -up 정보손실을 보정해주면서 가자.
 
     def forward(self, input):
         output = self.conv(input)
