@@ -27,9 +27,7 @@ class DeepLab(nn.Module):
         s4 = self.backbone.layer4(s3)
         neck = self.pre_aspp(s4)
         neck = self.aspp(neck)
-        print('neck shape : ', neck.shape)
         output = self.decoder(neck)
-        print('head shape : ', output.shape)
         return output
 
 

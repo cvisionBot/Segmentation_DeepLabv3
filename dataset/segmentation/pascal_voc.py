@@ -41,20 +41,32 @@ class PascalVocDataset(Dataset):
         return transform
 
 
-class PoscalVoc(pl.LightningDataModule):
-    def __init__(self, path, workers, transforms, batch_size=None):
-        super(PoscalVoc, self).__init__()
-        self.path = path
-        self.transforms = transforms
+class PascalVoc(pl.LightningDataModule):
+    def __init__(self, train_path, val_path, workers, train_transforms, valid_transforms, batch_size=None):
+        super(PascalVoc, self).__init__()
+        self.train_path = train_path
+        self.valid_path = val_path
+        self.train_transforms = train_transforms
+        self.val_transforms = valid_transforms
         self.batch_size = batch_size
         self.workers = workers
 
-    def make_dataloader(self):
-        return DataLoader(PascalVocDataset(self.path, transforms=self.transforms),
-                    batch_size = self.batch_size,
-                    num_workers = self.workers,
-                    persistent_workers = self.workers > 0,
-                    pin_memory = self.workers > 0,
+    def train_dataloader(self):
+        return DataLoader(PascalVocDataset(self.train_path, transforms=self.train_transforms),
+                    batch_size= self.batch_size,
+                    shuffle=True,
+                    num_workers=self.workers,
+                    persistent_workers=self.workers > 0,
+                    pin_memory= self.workers > 0,
+                    collate_fn=collater)
+    
+    def val_dataloader(self):
+        return DataLoader(PascalVocDataset(self.valid_path, transforms=self.val_transforms),
+                    batch_size=self.batch_size,
+                    shuffle=False,
+                    num_workers=self.workers,
+                    persistent_workers=self.workers > 0,
+                    pin_memory= self.workers > 0,
                     collate_fn=collater)
     
 
@@ -71,8 +83,8 @@ if __name__ == '__main__':
     ])
     print('make data')
     loader = DataLoader(PascalVocDataset(
-        transforms=train_transforms, path='/mnt/Segmentation'),
-        batch_size=2, shuffle=True, collate_fn=collater
+        transforms=train_transforms, path='/mnt/train'),
+        batch_size=8, shuffle=True, collate_fn=collater
     )
 
     for batch, sample in enumerate(loader):

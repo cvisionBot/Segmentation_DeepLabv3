@@ -18,10 +18,25 @@ class Segmentor(pl.LightningModule):
 
     def training_step(self, batch, batch_idx):
         loss = self.opt_training_step(batch)
-        self.log('focal_loss', loss, prog_bar=True, logger=True, on_step=True, on_epoch=True)
+        self.log('train_loss', loss, prog_bar=True, logger=True, on_step=True, on_epoch=True)
+        return loss
+
+    def validation_step(self, batch, batch_idx):
+        pred = self.model(batch['img'])
+        loss = self.loss_fn([pred, batch['label']])
+        self.log('val_loss', loss, prog_bar=True, logger=True, on_epoch=True, sync_dist=True)
         return loss
 
     def opt_training_step(self, batch):
         pred = self.model(batch['img'])
-        loss = self.loss_fn([pred, batch])
+        loss = self.loss_fn([pred, batch['label']])
         return loss
+
+
+    def configure_optimizers(self):
+        cfg = self.hparams.cfg
+        optim = get_optimizer(cfg['optimizer'],
+            params=self.model.parameters(),
+            **cfg['optimizer_options']
+        )
+        return optim

@@ -8,7 +8,21 @@ class FocalLoss(nn.Module):
         self.gamma = gamma
 
     def forward(self, input):
+        total_loss = []
         pred, target = input
+        batch_size = pred.shape[0]
+
+        for b in range(batch_size):
+            loss = self.loss_function(pred[b], target[b])
+            loss = loss.sum()
+            total_loss.append(loss)
+        
+        return torch.stack(total_loss).mean()
+        
+
+
+
+    def loss_function(self, pred, target):
         alpha_factor = torch.where(
             torch.eq(target, 1.), self.alpha, 1.-self.alpha)
         focal_weight = torch.where(torch.eq(target, 1.), 1.-pred, pred)
