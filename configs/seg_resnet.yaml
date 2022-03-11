@@ -4,7 +4,7 @@ classes: 20
 in_channels: 3
 train_path: '/mnt/train'
 val_path: '/mnt/val'
-names: '/dataset/detection/names/pascal_voc.txt'
+names: '/dataset/segmentation/names/pascal_voc.txt'
 input_size: 320
 
 workers: 4
