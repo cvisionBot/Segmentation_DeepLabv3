@@ -18,6 +18,7 @@ class DeepLab(nn.Module):
                             dilation=1, groups=1, bias=True, padding_mode='zeros')
         self.aspp = ASPP(in_channels= self.neck_input, out_channels= 256, up_scale=self.last_layer)
         self.decoder = Decoder(out_channels=256, branch=5, num_classes=num_classes)
+        weight_initialize(self)
 
     def forward(self, x):
         stem = self.backbone.resnetStem(x)

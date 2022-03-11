@@ -20,7 +20,7 @@ backbone: 'ResNet'
 
 optimizer: 'sgd'
 optimizer_options:
-  lr: 1e-3
+  lr: 1e-2
   momentum: 0.9
 
 loss: 'focal_loss'
