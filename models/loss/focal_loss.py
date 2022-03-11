@@ -11,12 +11,18 @@ class FocalLoss(nn.Module):
 
     def forward(self, input):
         pred, target = input
-        ce_loss = F.cross_entropy(
-            pred, target, reduction='none'
-        )
-        pt = torch.exp(-ce_loss)
-        focal_loss = self.alpha * (1-pt)**self.gamma * ce_loss
-        return focal_loss.mean()
+        batch_size = pred.shape[0]
+
+        focal_loss = []
+        for b in range(batch_size):
+            ce_loss = F.cross_entropy(
+                pred[b], target[b], reduction='none'
+            )
+            pt = torch.exp(-ce_loss)
+            batch_focal_loss = self.alpha * (1-pt)**self.gamma * ce_loss
+            focal_loss.append(batch_focal_loss)
+
+        return torch.stack(focal_loss).mean()
 
     # def forward(self, input):
     #     total_loss = []
