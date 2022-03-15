@@ -1,4 +1,3 @@
-from turtle import down
 from ..layers.convolution import Conv2dBnRelu, Conv2dBn
 from ..layers.blocks import BasicResNetBlock, BottleneckResNetBlock
 from ..initialize import weight_initialize

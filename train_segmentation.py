@@ -14,7 +14,7 @@ from utils.module_select import get_model
 from utils.yaml_helper import get_train_configs
 
 from module.segmentator import Segmentor
-from models.segmentor.deeplabv3 import DeepLab 
+from models.segmentor.deeplabv3 import DeepLabv3
 import platform
 
 def add_experimental_callbacks(cfg, train_callbacks):
@@ -53,7 +53,7 @@ def train(cfg, ckpt=None):
     )
 
     backbone = get_model(cfg['backbone'])
-    model = DeepLab(Backbone=backbone, num_classes=cfg['classes'], in_channels=cfg['in_channels'])
+    model = DeepLabv3(Backbone=backbone, num_classes=cfg['classes'], in_channels=cfg['in_channels'])
     model_module = Segmentor(model, cfg, epoch_length=data_module.train_dataloader().__len__())
     
     callbacks = [

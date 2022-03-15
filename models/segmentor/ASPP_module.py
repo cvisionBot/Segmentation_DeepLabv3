@@ -40,9 +40,9 @@ class ASPP(nn.Module):
         output = torch.cat([branch1, branch2, branch3, branch4, branch5], axis=1)
         return output
 
-class Decoder(nn.Module): # using deeplabv3
+class Decoderv3(nn.Module): # using deeplabv3
     def __init__(self, out_channels, branch, num_classes):
-        super(Decoder, self).__init__()
+        super(Decoderv3, self).__init__()
         self.conv = Conv2dBnRelu(in_channels=out_channels * branch, out_channels=out_channels, kernel_size=1, stride=1, padding=0, dilation=1,
                         groups=1, bias=True, padding_mode='zeros')
         self.out = nn.Conv2d(in_channels=out_channels, out_channels=num_classes, kernel_size=1)

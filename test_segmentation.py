@@ -7,7 +7,7 @@ import torch
 import argparse
 import numpy as np
 
-from models.segmentor.deeplabv3 import DeepLab
+from models.segmentor.deeplabv3 import DeepLabv3, DeepLabv3Plus
 from module.segmentator import Segmentor
 from utils.module_select import get_model
 from utils.yaml_helper import get_train_configs
@@ -29,7 +29,7 @@ def gen_random_colors(names):
     return colors
 
 
-def decode_output(output, thresh_hold=0.5):
+def decode_output(output, thresh_hold=0.0):
     # output shape : [1, 20, 320, 320]
     num_class = output.size()[1]
     for i in range(num_class):
@@ -49,6 +49,22 @@ def visualize_segmentation(output, idx, color, cfg):
     class_image = torch.permute(class_image, (1, 2, 0))
     return class_image
 
+def visualize_all_segmentation(output, names, colors, cfg):
+    # output shape : 1, 320, 320
+    image = torch.zeros((cfg['in_channels'], cfg['input_size'], cfg['input_size']))
+    output = output.expand(3, 320, 320)
+    
+    for c in range(1, 21):
+        color = colors[c-1]
+    
+        idx = output[:, :, :] == c
+        image[0, idx[0]] = color[0]
+        image[1, idx[0]] = color[1]
+        image[2, idx[0]] = color[2]
+
+    image = torch.permute(image, (1, 2, 0))
+    return image
+
 
 def main(cfg, image_name, save):
     names = parse_names(cfg['names'])
@@ -64,12 +80,12 @@ def main(cfg, image_name, save):
     
     # Load trained model
     backbone = get_model(cfg['backbone'])
-    model = DeepLab(Backbone=backbone, num_classes=cfg['classes'], in_channels=cfg['in_channels'])
+    model = DeepLabv3(Backbone=backbone, num_classes=cfg['classes'], in_channels=cfg['in_channels'])
     if torch.cuda.is_available:
         model = model.to('cuda')
     
     model_module = Segmentor.load_from_checkpoint(
-        './saved/ResNet_DeepLabv3_Pascal/version_0/checkpoints/last.ckpt',
+        '/home/insig/Segmentation/saved/ResNet_DeepLabv3_Pascal/version_2/checkpoints/last.ckpt',
         model=model
     )
     model_module.eval()
@@ -77,13 +93,21 @@ def main(cfg, image_name, save):
 
     output = model_module(image_inp)
     output = decode_output(output)
+    # output = torch.argmax(output, dim=1)
+
+    # result = visualize_all_segmentation(output, names, colors, cfg)
+    # result = result.detach().cpu().numpy()
+    # cv2.imwrite('./inference/result/inferece.png', result)
+
+    
+    #Decode Class Split - except argmax
 
     for i in range(output.size()[1]):
         color = colors[i]
         class_image = visualize_segmentation(output[:, i, :, :], i, color, cfg)
         class_image = class_image.detach().cpu().numpy()
         cv2.imwrite('./inference/result/'+str(i)+'_class.png', class_image)
-
+    
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
