@@ -7,7 +7,7 @@ import torch
 import argparse
 import numpy as np
 
-from models.segmentor.deeplabv3 import DeepLabv3, DeepLabv3Plus
+from models.segmentor.deeplabv3 import DeepLabv3
 from module.segmentator import Segmentor
 from utils.module_select import get_model
 from utils.yaml_helper import get_train_configs
@@ -29,14 +29,14 @@ def gen_random_colors(names):
     return colors
 
 
-def decode_output(output, thresh_hold=0.0):
+def decode_output(output, thresh_hold=0.5):
     # output shape : [1, 20, 320, 320]
     num_class = output.size()[1]
     for i in range(num_class):
         output[:, i, :, :] = torch.where(output[:, i, :, :] > thresh_hold, 1, 0)
     return output
 
-def visualize_segmentation(output, idx, color, cfg):
+def visualize_segmentation(output, color, cfg):
     # output shape : 1, 320, 320
     # class image : 3, 320, 320
     _, h, w = output.size()
@@ -85,28 +85,27 @@ def main(cfg, image_name, save):
         model = model.to('cuda')
     
     model_module = Segmentor.load_from_checkpoint(
-        '/home/insig/Segmentation/saved/ResNet_DeepLabv3_Pascal/version_2/checkpoints/last.ckpt',
+        '/home/insig/Segmentation_DeepLabv3/saved/ResNet_DeepLabv3_Pascal/version_0/checkpoints/last.ckpt',
         model=model
     )
     model_module.eval()
     # summary(model_module, input_size=(cfg['in_channels'], cfg['input_size'], cfg['input_size']))
 
     output = model_module(image_inp)
-    output = decode_output(output)
-    # output = torch.argmax(output, dim=1)
-
-    # result = visualize_all_segmentation(output, names, colors, cfg)
-    # result = result.detach().cpu().numpy()
-    # cv2.imwrite('./inference/result/inferece.png', result)
+    # output = decode_output(output)
+    output = torch.argmax(output, dim=1)
+    result = visualize_all_segmentation(output, names, colors, cfg)
+    result = result.detach().cpu().numpy()
+    cv2.imwrite('./inference/result/inferece1.png', result)
 
     
     #Decode Class Split - except argmax
 
-    for i in range(output.size()[1]):
-        color = colors[i]
-        class_image = visualize_segmentation(output[:, i, :, :], i, color, cfg)
-        class_image = class_image.detach().cpu().numpy()
-        cv2.imwrite('./inference/result/'+str(i)+'_class.png', class_image)
+    # for i in range(output.size()[1]):
+    #     color = colors[i]
+    #     class_image = visualize_segmentation(output[:, i, :, :], i, color, cfg)
+    #     class_image = class_image.detach().cpu().numpy()
+    #     cv2.imwrite('./inference/result/'+str(i)+'_class.png', class_image)
     
 
 if __name__ == '__main__':
@@ -116,4 +115,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
     cfg = get_train_configs(args.cfg)
     
-    main(cfg, './inference/sample/test.jpg', args.save)
+    main(cfg, './inference/sample/test1.jpg', args.save)

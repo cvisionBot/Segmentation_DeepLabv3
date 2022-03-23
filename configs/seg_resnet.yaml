@@ -1,4 +1,4 @@
-model: 'ResNet_DeepLabv3Plus'
+model: 'ResNet_DeepLabv3'
 dataset_name: 'Pascal'
 classes: 20
 in_channels: 3
