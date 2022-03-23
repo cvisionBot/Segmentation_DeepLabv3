@@ -5,7 +5,7 @@ import glob
 import torch
 import pytorch_lightning as pl
 from torch.utils.data import Dataset, DataLoader
-from dataset.segmentation.utils import collater
+from dataset.segmentation.utils import collater, visualize_input
 import numpy as np
 from PIL import Image
 
@@ -27,7 +27,7 @@ class PascalVocDataset(Dataset):
             self.mask = image.replace('jpg', 'png')
             self.mask = Image.open(self.mask)
             self.mask = np.array(self.mask)
-            self.mask = np.where(self.mask==255, 0, self.mask)
+            # self.mask = np.where(self.mask==255, 0, self.mask)
             self.train_list[image] = self.mask 
 
     def __len__(self):
@@ -83,8 +83,8 @@ if __name__ == '__main__':
     ])
     print('make data')
     loader = DataLoader(PascalVocDataset(
-        transforms=train_transforms, path='/mnt/train'),
-        batch_size=8, shuffle=True, collate_fn=collater
+        transforms=train_transforms, path='/mnt/test'),
+        batch_size=1, shuffle=True, collate_fn=collater
     )
 
     for batch, sample in enumerate(loader):
@@ -94,13 +94,8 @@ if __name__ == '__main__':
         labels = sample['mask'] : [1, 320, 320]
         '''
         img = sample['img']
-        print('# # # # # img # # # # #')
-        print(img.shape)
-        print(img)
         label = sample['label']
-        print('# # # # # label # # # # #')
-        print(label.shape)
-        print(label)
+        visualize_input(label)
         
         
     
