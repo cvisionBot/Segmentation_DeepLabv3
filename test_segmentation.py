@@ -85,7 +85,7 @@ def main(cfg, image_name, save):
         model = model.to('cuda')
     
     model_module = Segmentor.load_from_checkpoint(
-        '/home/insig/Segmentation_DeepLabv3/saved/ResNet_DeepLabv3_Pascal/version_0/checkpoints/last.ckpt',
+        '/home/insig/Segmentation_DeepLabv3/saved/ResNet_DeepLabv3_Pascal/version_1/checkpoints/last.ckpt',
         model=model
     )
     model_module.eval()
@@ -96,7 +96,7 @@ def main(cfg, image_name, save):
     output = torch.argmax(output, dim=1)
     result = visualize_all_segmentation(output, names, colors, cfg)
     result = result.detach().cpu().numpy()
-    cv2.imwrite('./inference/result/inferece1.png', result)
+    cv2.imwrite('./inference/result/inferece.png', result)
 
     
     #Decode Class Split - except argmax
@@ -115,4 +115,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
     cfg = get_train_configs(args.cfg)
     
-    main(cfg, './inference/sample/test1.jpg', args.save)
+    main(cfg, './inference/sample/test.jpg', args.save)

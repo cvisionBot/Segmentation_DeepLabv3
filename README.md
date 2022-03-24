@@ -60,9 +60,10 @@ Semantic Segmentation 모델 Train 스크립트 입니다.
     python train_segmenntation.py --cfg configs/seg_resnet.yaml
 
 ## Test DeepLabv3
-![deeplabv3](./doc/deeplabv3/deeplabv3.PNG)
+![deeplabv3](./doc/deeplabv3/inference.PNG)
 
 ## TODOs
 - Backbone Networks Customizing
 - Deployment를 위한 ONNX Conversion Script, Torch Script 추가
+- DeepLabv3 Plus 추가
 - Instance Segmentation 방법 추가
